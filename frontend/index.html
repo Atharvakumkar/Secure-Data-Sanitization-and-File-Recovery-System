@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIH 2026 - Digital Forensics Data Recovery System</title>
+    <!-- Tailwind CSS CDN for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between shadow-lg">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 p-2.5 rounded-lg">
+                <i class="fa-solid fa-microchip text-xl text-white"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-wide">SIH 2026 Digital Forensics System</h1>
+                <p class="text-xs text-slate-400">Data Recovery & Validation Module</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700 text-xs text-slate-300">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            System Ready (evidence.img)
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Controls Panel -->
+        <div class="md:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-md flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-semibold mb-4 text-slate-200 border-b border-slate-700 pb-2">
+                    <i class="fa-solid fa-sliders text-indigo-400 mr-2"></i>Recovery Controls
+                </h2>
+
+                <label class="block text-sm font-medium text-slate-300 mb-2">Select Extraction Method</label>
+                <div class="space-y-3 mb-6">
+                    <label class="flex items-start gap-3 p-3 bg-slate-900/60 border border-slate-700 rounded-lg cursor-pointer hover:border-indigo-500 transition-all">
+                        <input type="radio" name="method" value="filesystem" checked class="mt-1 accent-indigo-500">
+                        <div>
+                            <div class="text-sm font-semibold text-white">Filesystem Recovery</div>
+                            <div class="text-xs text-slate-400">Uses Sleuth Kit (fls & icat) to extract files by inode and preserve metadata.</div>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-900/60 border border-slate-700 rounded-lg cursor-pointer hover:border-indigo-500 transition-all">
+                        <input type="radio" name="method" value="carving" class="mt-1 accent-indigo-500">
+                        <div>
+                            <div class="text-sm font-semibold text-white">Raw File Carving</div>
+                            <div class="text-xs text-slate-400">Custom Python byte scanner for file headers & footers (JPG, PNG, PDF).</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button id="recoverBtn" onclick="triggerRecovery()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-lg transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-play"></i> Start Recovery Process
+            </button>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="md:col-span-2 bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-md flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                <h2 class="text-lg font-semibold text-slate-200">
+                    <i class="fa-solid fa-folder-open text-amber-400 mr-2"></i>Recovered Evidence Files
+                </h2>
+                <div id="statsBadge" class="hidden text-xs bg-slate-700 px-3 py-1 rounded-full text-slate-300">
+                    Total: <span id="totalFilesCount" class="font-bold text-white">0</span>
+                </div>
+            </div>
+
+            <!-- Loader -->
+            <div id="loader" class="hidden flex-1 flex flex-col items-center justify-center py-12 text-slate-400">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                <p class="text-sm animate-pulse">Running data recovery & integrity validation engine...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="flex-1 flex flex-col items-center justify-center py-16 text-slate-500">
+                <i class="fa-solid fa-hard-drive text-4xl mb-3 opacity-40"></i>
+                <p class="text-sm">Select a method and click "Start Recovery Process" to scan disk image.</p>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="errorBanner" class="hidden mb-4 p-4 bg-rose-900/40 border border-rose-600/50 rounded-lg text-rose-200 text-sm"></div>
+
+            <!-- Results Table -->
+            <div id="resultsWrapper" class="hidden flex-1 overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-900/80 text-xs text-slate-400 uppercase tracking-wider border-b border-slate-700">
+                        <tr>
+                            <th class="py-3 px-4">Filename</th>
+                            <th class="py-3 px-4">Size (MB)</th>
+                            <th class="py-3 px-4">Integrity Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody" class="divide-y divide-slate-700/50">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-800">
+        SIH 2026 Prototype • Team 2 • Secure Data Sanitization and File Recovery System
+    </footer>
+
+    <script>
+        async function triggerRecovery() {
+            const methodInput = document.querySelector('input[name="method"]:checked');
+            if (!methodInput) return;
+
+            const method = methodInput.value;
+
+            const recoverBtn = document.getElementById('recoverBtn');
+            const loader = document.getElementById('loader');
+            const emptyState = document.getElementById('emptyState');
+            const resultsWrapper = document.getElementById('resultsWrapper');
+            const errorBanner = document.getElementById('errorBanner');
+            const statsBadge = document.getElementById('statsBadge');
+            const totalFilesCount = document.getElementById('totalFilesCount');
+            const tbody = document.getElementById('resultsTableBody');
+
+            // UI Reset
+            recoverBtn.disabled = true;
+            recoverBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            errorBanner.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            resultsWrapper.classList.add('hidden');
+            loader.classList.remove('hidden');
+            tbody.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/recover', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ method: method })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Failed to complete recovery process.');
+                }
+
+                // Render Table
+                loader.classList.add('hidden');
+                statsBadge.classList.remove('hidden');
+                totalFilesCount.textContent = data.total_recovered;
+
+                if (data.files.length === 0) {
+                    emptyState.classList.remove('hidden');
+                } else {
+                    data.files.forEach(file => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-slate-700/30 transition-colors';
+
+                        let statusBadge = '';
+                        if (file.status === 'VALID') {
+                            statusBadge = `<span class="bg-emerald-900/60 text-emerald-300 border border-emerald-500/40 text-xs px-2.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-check mr-1"></i>VALID</span>`;
+                        } else if (file.status === 'PARTIAL') {
+                            statusBadge = `<span class="bg-amber-900/60 text-amber-300 border border-amber-500/40 text-xs px-2.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-triangle-exclamation mr-1"></i>PARTIAL</span>`;
+                        } else {
+                            statusBadge = `<span class="bg-rose-900/60 text-rose-300 border border-rose-500/40 text-xs px-2.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-xmark mr-1"></i>INVALID</span>`;
+                        }
+
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 font-mono text-slate-200">${file.filename}</td>
+                            <td class="py-3 px-4">${file.size_mb} MB</td>
+                            <td class="py-3 px-4">${statusBadge}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    resultsWrapper.classList.remove('hidden');
+                }
+
+            } catch (err) {
+                loader.classList.add('hidden');
+                errorBanner.textContent = `Error: ${err.message}`;
+                errorBanner.classList.remove('hidden');
+            } finally {
+                recoverBtn.disabled = false;
+                recoverBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+    </script>
+</body>
+</html>
