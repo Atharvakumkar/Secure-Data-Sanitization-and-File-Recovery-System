@@ -50,6 +50,7 @@ async function handleFileSelect(event) {
 
     if (data.success) {
       setUploadedTarget(data.target)
+<<<<<<< HEAD:SIH-GUI/secureerase-sih/src/App.jsx
       alert(`File uploaded successfully: ${data.target}`)
     } else {
       alert(`Upload failed: ${data.error}`)
@@ -57,6 +58,14 @@ async function handleFileSelect(event) {
   } catch (error) {
     console.error("Upload Error:", error)
     alert("Could not connect to the sanitization engine.")
+=======
+    } else {
+      console.error("Upload failed:" ,data.error)
+    }
+  } catch (error) {
+    console.error("Upload Error:", error)
+    
+>>>>>>> 1b8b5a3 (Improve sanitization GUI layout):src/App.jsx
   }
 }
   async function startSanitization() {
@@ -77,6 +86,7 @@ async function handleFileSelect(event) {
 
     if (data.success) {
       setStarted(true)
+<<<<<<< HEAD:SIH-GUI/secureerase-sih/src/App.jsx
       alert("Sanitization completed successfully!")
     } else {
       alert(`Sanitization failed: ${data.message || data.result}`)
@@ -84,6 +94,17 @@ async function handleFileSelect(event) {
   } catch (error) {
     console.error("API Error:", error)
     alert("Could not connect to the sanitization engine.")
+=======
+      
+    } else {
+      setStarted(false)
+      console.error(
+      "Sanitization failed:", data.message || data.error || data.result)
+    }
+  } catch (error) {
+    console.error("API Error:", error)
+    
+>>>>>>> 1b8b5a3 (Improve sanitization GUI layout):src/App.jsx
   }
 }
 

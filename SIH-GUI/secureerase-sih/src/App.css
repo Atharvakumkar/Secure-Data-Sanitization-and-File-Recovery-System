@@ -139,8 +139,9 @@ button {
 /* MAIN */
 
 .main {
-  width: calc(100% - 250px);
+  flex: 1;
   margin-left: 250px;
+  min-width:0;
 }
 
 .topbar {
@@ -238,9 +239,11 @@ button {
 /* CONTENT */
 
 .content {
+  width:100%;
   padding: 25px 20px 45px;
-  max-width: 1500px;
-  margin: auto;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -374,7 +377,7 @@ button {
 
 .main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 350px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 18px;
 }
 
@@ -409,13 +412,14 @@ button {
 
 .config-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
 }
 
 .config-left {
   border-right: 1px solid #1b324a;
   padding-right: 24px;
+  min-width: 0;
 }
 
 .config-left label {
@@ -455,7 +459,7 @@ button {
 
 .device-info div {
   display: grid;
-  grid-template-columns: 95px 1fr;
+  grid-template-columns: 80px minmax(0, 1fr);
   gap: 10px;
   margin-bottom: 7px;
   font-size: 12px;
@@ -498,10 +502,11 @@ button {
 
 .check-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   color: #d1ddeb;
   font-size: 12px;
+  line-height: 1.4;
   margin: 13px 0;
 }
 
@@ -514,11 +519,13 @@ button {
 .warning {
   display: flex;
   gap: 11px;
-  padding: 11px;
+  padding: 12px;
   margin-top: 18px;
   border-radius: 7px;
   border: 1px solid #70404c;
   background: #281b2a;
+  width: 100%;
+  min-width: 0;
 }
 
 .warning-icon {
@@ -556,6 +563,7 @@ button {
   color: white;
   font-weight: bold;
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .start-button:hover {
@@ -796,8 +804,9 @@ td {
   }
 
   .main {
-    width: calc(100% - 210px);
-    margin-left: 210px;
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    min-width: 0;
   }
 
   .main-grid {
@@ -885,4 +894,9 @@ td {
 .sanitization-result span {
   font-size: 12px;
   opacity: 0.7;
+<<<<<<< HEAD:SIH-GUI/secureerase-sih/src/App.css
+=======
+  overflow-wrap: anywhere;
+  word-break: break-word;
+>>>>>>> 1b8b5a3 (Improve sanitization GUI layout):src/App.css
 }
